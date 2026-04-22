@@ -1,0 +1,16 @@
+project_name: radiology-copilot
+
+random_seed: 42
+
+dataset:
+  name: local_radiology_data
+  image_exts: [".png", ".jpg", ".jpeg", ".dcm"]
+  text_exts: [".csv", ".json", ".txt"]
+
+training:
+  batch_size: 8
+  num_workers: 2
+  image_size: 224
+
+runtime:
+  device: cuda

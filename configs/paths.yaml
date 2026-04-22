@@ -1,0 +1,12 @@
+project_root: /home/tanyasrivastava/projects/radiology-copilot
+
+data:
+  raw: /home/tanyasrivastava/projects/radiology-copilot/data/raw
+  interim: /home/tanyasrivastava/projects/radiology-copilot/data/interim
+  processed: /home/tanyasrivastava/projects/radiology-copilot/data/processed
+
+outputs:
+  figures: /home/tanyasrivastava/projects/radiology-copilot/outputs/figures
+  reports: /home/tanyasrivastava/projects/radiology-copilot/outputs/reports
+  checkpoints: /home/tanyasrivastava/projects/radiology-copilot/outputs/checkpoints
+  logs: /home/tanyasrivastava/projects/radiology-copilot/outputs/logs

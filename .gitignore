@@ -1,13 +1,36 @@
-.venv/
+# Python
 __pycache__/
-*.pyc
-.ipynb_checkpoints/
-.DS_Store
+*.py[cod]
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
 
+# Virtual environments
+.venv/
+venv/
+env/
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/
+
+# Data
 data/raw/
 data/interim/
-data/processed/
-outputs/checkpoints/
-outputs/logs/
+data/processed/*.csv
 
-.env
+# Model checkpoints
+outputs/checkpoints/
+*.pt
+*.pth
+*.ckpt
+
+# Logs
+outputs/logs/
+*.log
+
+# Notebooks checkpoints
+.ipynb_checkpoints/
