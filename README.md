@@ -200,3 +200,91 @@ The auditor concentrates risk into the manual-review group. The accepted-output 
 ### Limitation
 
 The rule-based auditor does not catch every missed positive. In the current test set, 12 false negatives were still accepted because they had adequate image quality, normal artifact encoding, and low model probabilities.
+
+## Professor Recommendation Update
+
+Additional analysis was added after professor feedback to strengthen explainability and auditor-rule design.
+
+### SHAP Explainability
+
+SHAP analysis was added at two levels:
+
+1. **Branch-level SHAP on fused latent features**
+   - EfficientNet-B0 image encoder latent features
+   - metadata MLP encoder latent features
+   - SHAP values averaged across the explained test subset
+
+2. **Raw metadata-input SHAP**
+   - patient_age
+   - patient_sex
+   - exam_eye
+   - diabetes
+   - optic_disc
+   - vessels
+   - macula
+   - focus
+   - Illuminaton
+   - artifacts
+
+Branch-level SHAP showed that the EfficientNet-B0 image branch contributed most of the total fused-model importance, while the metadata MLP branch contributed a smaller but measurable amount.
+
+Raw metadata SHAP showed patient_age as the dominant metadata input. This result should be interpreted carefully because patient_age is continuous while most other metadata fields are categorical or binary.
+
+### Auditor Rule Validation: Option A
+
+The auditor rule was validated by testing different probability ranges around the multimodal model threshold of 0.85.
+
+Tested margins:
+- ±0.03
+- ±0.05
+- ±0.07
+- ±0.10
+- ±0.15
+- ±0.20
+- ±0.25
+
+The selected range was:
+
+```text
+0.70 to 1.00
+```
+
+This corresponds to margin ±0.15 around the selected threshold of 0.85.
+
+At this range:
+
+| Metric | Value |
+|---|---|
+| Flagged cases | 253 / 2,437 |
+| Flagged percentage | 10.38% |
+| Actual DR percentage in flagged cases | 52.96% |
+| Overall DR percentage in test set | 6.44% |
+| DR enrichment ratio | 8.22x |
+| Accepted-output error rate | 1.05% |
+| False positives captured | 54 / 54 |
+| False negatives captured | 9 / 32 |
+
+This supports the auditor design because the manual-review bucket is not arbitrary. It is empirically enriched for actual diabetic retinopathy cases compared with the overall held-out test distribution.
+
+### Why Option B Was Not Implemented
+
+Option B would require comparing predicted labels from three independent models:
+
+- image-only EfficientNet-B0
+- metadata-only MLP
+- fused multimodal model
+
+The current project has an image-only model and a fused multimodal model. The MLP exists as a metadata branch inside the fused model, not as an independently trained metadata-only classifier. Therefore, implementing Option B without training a separate metadata-only MLP would be methodologically weak.
+
+### Additional Artifacts
+
+- outputs/reports/auditor_boundary_range_validation.csv
+- outputs/reports/auditor_boundary_range_validation.md
+- outputs/reports/branch_shap_feature_values.csv
+- outputs/reports/branch_shap_summary.csv
+- outputs/reports/branch_shap_summary.md
+- outputs/reports/metadata_input_shap_summary.csv
+- outputs/reports/metadata_input_shap_summary.md
+- outputs/reports/professor_recommendation_update_summary.md
+- outputs/figures/branch_level_shap_importance.png
+- outputs/figures/metadata_input_shap_importance.png
