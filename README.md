@@ -8,8 +8,8 @@ This project builds a fundus screening prototype for diabetic retinopathy predic
 |---|---|---|
 | Stage 1 | Complete | Data ingestion, validation, binary DR dataset creation, patient-level splits, image-only EfficientNet-B0 baseline |
 | Stage 2 | Complete | Multimodal image + metadata fusion model, validation-selected threshold, test evaluation |
-| Stage 3 | Not started | Self-correction/auditor layer |
-| Stage 4 | Not started | Final comparison, saved-vs-missed examples, report, and presentation |
+| Stage 3 | Complete | Rule-based auditor/self-correction layer with manual-review routing |
+| Stage 4 | Complete | Final comparison, auditor evaluation, plots, and consolidated project summary |
 
 ## Dataset
 
@@ -114,16 +114,22 @@ This supports the project assumption that structured patient/context metadata ca
     src/training/              training utilities
     src/evaluation/            evaluation utilities
     src/inference/             inference utilities
-    src/agents/                future auditor/self-correction logic
+    src/agents/                auditor/self-correction logic
     tests/                     tests
 
-## Important Stage 2 Artifacts
+## Important Artifacts
 
     outputs/reports/stage2_multimodal_summary.md
     outputs/reports/model_comparison_summary.csv
     outputs/reports/multimodal_test_predictions.csv
+    outputs/reports/audited_multimodal_test_predictions.csv
+    outputs/reports/stage3_auditor_summary.md
+    outputs/reports/final_project_summary.md
     outputs/figures/stage2_model_metric_comparison.png
     outputs/figures/stage2_error_comparison.png
+    outputs/figures/stage3_audit_decision_distribution.png
+    outputs/figures/stage3_error_rate_by_audit_decision.png
+    outputs/figures/stage3_risk_band_distribution.png
 
 ## Important Checkpoints
 
@@ -132,7 +138,7 @@ This supports the project assumption that structured patient/context metadata ca
 
 Model checkpoints and raw data are not intended to be committed to Git because of size and reproducibility concerns.
 
-## Reproduce Stage 2 Results
+## Reproduce Results
 
 Activate the project environment:
 
@@ -147,14 +153,50 @@ Generate model comparison plots:
 
     python scripts/plot_stage2_results.py
 
-## Next Work: Stage 3 Auditor Layer
+Run the Stage 3 auditor:
 
-The next stage will add a self-correction/auditor layer that flags cases for review based on:
+    python scripts/run_auditor.py
 
-- low confidence
-- poor image quality or artifacts
-- near-threshold predictions
-- risky false-negative patterns
-- disagreement between model confidence and metadata/context signals
+Generate Stage 3 auditor summary:
 
-The goal is to produce a final screening output with both prediction and review recommendation.
+    python scripts/summarize_auditor_results.py
+
+Generate Stage 3 plots:
+
+    python scripts/plot_stage3_auditor_results.py
+
+Generate final project summary:
+
+    python scripts/create_final_project_summary.py
+
+## Stage 3: Auditor / Self-Correction Layer
+
+Stage 3 adds a transparent rule-based auditor on top of the multimodal model.
+
+The auditor reviews model probability, the selected threshold, near-threshold uncertainty, elevated probability despite negative prediction, model-positive high-risk cases, image quality, and artifact severity.
+
+The auditor produces:
+
+- `audit_decision`
+- `audit_reasons`
+- `risk_band`
+
+### Auditor Result
+
+| Metric | Value |
+|---|---:|
+| Total test cases | 2,437 |
+| Accepted model outputs | 1,814 |
+| Sent to manual review | 623 |
+| Accepted-output share | 74.44% |
+| Manual-review share | 25.56% |
+| Accepted-output error rate | 0.66% |
+| Manual-review error rate | 11.88% |
+| False negatives captured by auditor | 20 / 32 |
+| False positives captured by auditor | 54 / 54 |
+
+The auditor concentrates risk into the manual-review group. The accepted-output group has a much lower observed error rate, while the manual-review group contains a much higher share of errors and uncertainty.
+
+### Limitation
+
+The rule-based auditor does not catch every missed positive. In the current test set, 12 false negatives were still accepted because they had adequate image quality, normal artifact encoding, and low model probabilities.
