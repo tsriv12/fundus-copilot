@@ -141,6 +141,14 @@ This supports the project assumption that structured patient/context metadata ca
 
 Model checkpoints and raw data are not intended to be committed to Git because of size and reproducibility concerns.
 
+## Reproducibility Notes
+
+The project uses version-controlled code, pinned dependencies in `requirements.txt`, documented hyperparameters, saved local checkpoints, and reproducible patient-level train/validation/test splits. The patient-level split uses a fixed random state of 42, and the metadata-only logistic regression baseline uses `random_state=42`.
+
+Deep-learning checkpoints were generated locally on the GCP Tesla T4 VM and saved under `outputs/checkpoints/`. Raw data and checkpoint files are excluded from Git due to size, but the scripts required to regenerate them are included in the repository.
+
+A limitation is that the original EfficientNet training runs did not enforce full PyTorch deterministic seeding across Python, NumPy, CUDA, and CuDNN. Therefore, exact bitwise-identical retraining is not guaranteed, although the data splits, dependencies, hyperparameters, scripts, and generated evaluation artifacts are preserved.
+
 ## Reproduce Results
 
 Activate the project environment:
