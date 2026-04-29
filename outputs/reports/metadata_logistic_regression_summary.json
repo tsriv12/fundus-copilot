@@ -1,0 +1,29 @@
+{
+  "model": "Metadata-only Logistic Regression",
+  "features": [
+    "patient_age",
+    "patient_sex",
+    "exam_eye",
+    "diabetes",
+    "optic_disc",
+    "vessels",
+    "macula",
+    "focus",
+    "Illuminaton",
+    "artifacts"
+  ],
+  "best_threshold_selected_on_validation": 0.7400000000000002,
+  "test_metrics": {
+    "threshold": 0.7400000000000002,
+    "accuracy": 0.8924907673368896,
+    "precision": 0.32786885245901637,
+    "recall": 0.6369426751592356,
+    "f1": 0.4329004329004329,
+    "roc_auc": 0.8764261369985473,
+    "pr_auc": 0.3808616178732728,
+    "tn": 2075,
+    "fp": 205,
+    "fn": 57,
+    "tp": 100
+  }
+}
